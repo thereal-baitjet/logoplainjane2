@@ -1,26 +1,15 @@
-// Initialize Firebase with your config
-firebase.initializeApp({
-  apiKey: "AIzaSyAO6dyONklESriV0JolOmafx60I-79w6UA",
-  authDomain: "logoplainjane.firebaseapp.com",
-  projectId: "logoplainjane",
-  storageBucket: "logoplainjane.appspot.com", // Fixed storage bucket URL
-  messagingSenderId: "53515738347",
-  appId: "1:53515738347:web:886b5a7efd8141f37172ae",
-  measurementId: "G-ENK134X763"
-});
-
-// Initialize Firebase services
-const db = firebase.firestore();
-const storage = firebase.storage();
-const analytics = firebase.analytics();
+// Initialize Supabase client
+const supabaseUrl = 'YOUR_SUPABASE_URL'; // You'll need to replace this
+const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'; // You'll need to replace this
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 // Your existing logos array with starter logos
 let logos = [
     {
-        id: "1",
+        id: 1,
         title: "Abstract Geometric Logo",
         description: "A modern abstract logo with geometric shapes in vibrant colors. Perfect for tech companies and startups.",
-        imageUrl: "https://cdn.pixabay.com/photo/2017/03/16/21/18/logo-2150297_1280.png",
+        image_url: "https://cdn.pixabay.com/photo/2017/03/16/21/18/logo-2150297_1280.png",
         tags: ["abstract", "geometric", "modern", "tech", "colorful"],
         designer: "Jane Smith",
         year: "2022",
@@ -28,10 +17,10 @@ let logos = [
         colors: ["blue", "purple", "orange"]
     },
     {
-        id: "2",
+        id: 2,
         title: "Minimalist Coffee Shop Logo",
         description: "A clean, minimalist logo for an artisanal coffee shop. Features a simple coffee cup icon with elegant typography.",
-        imageUrl: "https://cdn.pixabay.com/photo/2016/11/26/19/04/coffee-1861608_1280.png",
+        image_url: "https://cdn.pixabay.com/photo/2016/11/26/19/04/coffee-1861608_1280.png",
         tags: ["minimalist", "coffee", "food", "beverage", "simple"],
         designer: "Mark Johnson",
         year: "2021",
@@ -39,10 +28,10 @@ let logos = [
         colors: ["brown", "beige", "white"]
     },
     {
-        id: "3",
+        id: 3,
         title: "Vintage Photography Logo",
         description: "A vintage-inspired logo for a professional photographer. Features a classic camera icon with retro typography.",
-        imageUrl: "https://cdn.pixabay.com/photo/2016/11/19/14/16/camera-1839371_1280.jpg",
+        image_url: "https://cdn.pixabay.com/photo/2016/11/19/14/16/camera-1839371_1280.jpg",
         tags: ["vintage", "photography", "retro", "camera", "professional"],
         designer: "Sarah Williams",
         year: "2020",
@@ -50,10 +39,10 @@ let logos = [
         colors: ["black", "gold", "cream"]
     },
     {
-        id: "4",
+        id: 4,
         title: "Eco-Friendly Nature Logo",
         description: "An organic, eco-friendly logo for environmental organizations or sustainable products. Features a leaf motif.",
-        imageUrl: "https://cdn.pixabay.com/photo/2017/01/13/14/55/leaves-1977740_1280.png",
+        image_url: "https://cdn.pixabay.com/photo/2017/01/13/14/55/leaves-1977740_1280.png",
         tags: ["eco", "nature", "organic", "green", "leaf"],
         designer: "David Green",
         year: "2023",
@@ -61,10 +50,10 @@ let logos = [
         colors: ["green", "brown", "white"]
     },
     {
-        id: "5",
+        id: 5,
         title: "Bold Fitness Brand Logo",
         description: "A bold, energetic logo for a fitness brand or gym. Features dynamic shapes suggesting movement and strength.",
-        imageUrl: "https://cdn.pixabay.com/photo/2016/06/09/18/36/logo-1446293_1280.png",
+        image_url: "https://cdn.pixabay.com/photo/2016/06/09/18/36/logo-1446293_1280.png",
         tags: ["fitness", "gym", "bold", "energetic", "sports"],
         designer: "Michael Strong",
         year: "2022",
@@ -72,10 +61,10 @@ let logos = [
         colors: ["red", "black", "white"]
     },
     {
-        id: "6",
+        id: 6,
         title: "Luxury Fashion Logo",
         description: "An elegant, sophisticated logo for a luxury fashion brand. Features refined typography and a minimalist icon.",
-        imageUrl: "https://cdn.pixabay.com/photo/2017/01/31/23/42/animal-2028258_1280.png",
+        image_url: "https://cdn.pixabay.com/photo/2017/01/31/23/42/animal-2028258_1280.png",
         tags: ["luxury", "fashion", "elegant", "sophisticated", "minimalist"],
         designer: "Sophia Chen",
         year: "2021",
@@ -101,26 +90,32 @@ const yearFilter = document.getElementById('year-filter');
 const colorFilter = document.getElementById('color-filter');
 const clearFilters = document.getElementById('clear-filters');
 
-// Load logos from Firebase
-async function loadLogosFromFirebase() {
+// Load logos from Supabase
+async function loadLogosFromSupabase() {
     try {
-        console.log("Attempting to load logos from Firebase...");
-        const querySnapshot = await db.collection('logos').orderBy('id', 'desc').get();
+        console.log("Attempting to load logos from Supabase...");
         
-        const loadedLogos = [];
-        querySnapshot.forEach((doc) => {
-            loadedLogos.push({ id: doc.id, ...doc.data() });
-        });
+        // Query the logos table
+        const { data, error } = await supabase
+            .from('logos')
+            .select('*')
+            .order('id', { ascending: false });
         
-        if (loadedLogos.length > 0) {
-            console.log(`Loaded ${loadedLogos.length} logos from Firebase`);
-            logos = loadedLogos;
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+            console.log(`Loaded ${data.length} logos from Supabase`);
+            logos = data;
         } else {
-            console.log("No logos found in Firebase, using starter logos");
+            console.log("No logos found in Supabase, using starter logos");
             // If no logos in database yet, upload the initial set
             for (const logo of logos) {
                 try {
-                    await db.collection('logos').add(logo);
+                    const { error } = await supabase
+                        .from('logos')
+                        .insert([logo]);
+                    
+                    if (error) throw error;
                     console.log(`Added starter logo: ${logo.title}`);
                 } catch (error) {
                     console.error(`Error adding starter logo ${logo.title}:`, error);
@@ -131,14 +126,14 @@ async function loadLogosFromFirebase() {
         initializeFilters();
         displayLogos();
     } catch (error) {
-        console.error("Error loading logos from Firebase:", error);
+        console.error("Error loading logos from Supabase:", error);
         console.log("Using starter logos instead");
         initializeFilters();
         displayLogos();
     }
 }
 
-// Upload logo to Firebase
+// Upload logo to Supabase
 async function handleLogoUpload(event) {
     console.log("Upload function called");
     
@@ -161,19 +156,29 @@ async function handleLogoUpload(event) {
         
         // Create a unique filename
         const fileName = `${Date.now()}_${file.name}`;
-        const storageRef = storage.ref(`logos/${fileName}`);
+        const filePath = `logos/${fileName}`;
         
-        console.log("Uploading file to Firebase Storage...");
-        // Upload file to Firebase Storage
-        const snapshot = await storageRef.put(file);
+        console.log("Uploading file to Supabase Storage...");
+        // Upload file to Supabase Storage
+        const { data: uploadData, error: uploadError } = await supabase
+            .storage
+            .from('logo-images')  // Your bucket name
+            .upload(filePath, file);
+        
+        if (uploadError) throw uploadError;
         console.log("File uploaded successfully");
         
         // Update loading indicator
         loadingIndicator.innerHTML = '<p>Processing logo...</p>';
         
-        // Get the download URL
-        const downloadURL = await snapshot.ref.getDownloadURL();
-        console.log("Got download URL:", downloadURL);
+        // Get the public URL
+        const { data: publicUrlData } = supabase
+            .storage
+            .from('logo-images')
+            .getPublicUrl(filePath);
+        
+        const downloadURL = publicUrlData.publicUrl;
+        console.log("Got public URL:", downloadURL);
         
         // Remove loading indicator
         document.body.removeChild(loadingIndicator);
@@ -190,10 +195,9 @@ async function handleLogoUpload(event) {
         const logoColors = prompt('What colors are in this logo? (comma separated)', 'black, white');
         
         const newLogo = {
-            id: Date.now().toString(),
             title: logoName,
             description: logoDescription || 'Custom uploaded logo',
-            imageUrl: downloadURL,
+            image_url: downloadURL,
             tags: logoTags ? logoTags.split(',').map(tag => tag.trim().toLowerCase()) : ['custom', 'uploaded'],
             designer: logoDesigner || 'Unknown',
             year: logoYear || new Date().getFullYear().toString(),
@@ -201,13 +205,17 @@ async function handleLogoUpload(event) {
             colors: logoColors ? logoColors.split(',').map(color => color.trim().toLowerCase()) : ['black', 'white']
         };
         
-        console.log("Saving logo data to Firestore...");
-        // Save to Firebase Database
-        await db.collection('logos').add(newLogo);
+        console.log("Saving logo data to Supabase...");
+        // Save to Supabase Database
+        const { error: insertError } = await supabase
+            .from('logos')
+            .insert([newLogo]);
+        
+        if (insertError) throw insertError;
         console.log("Logo data saved successfully");
         
         // Reload logos
-        await loadLogosFromFirebase();
+        await loadLogosFromSupabase();
         
         // Reset file input
         logoUpload.value = '';
@@ -290,7 +298,7 @@ function displayLogos(logosToDisplay = logos) {
         
         logoItem.innerHTML = `
             <div class="logo-img-container">
-                <img src="${logo.imageUrl}" alt="${logo.title}" class="logo-img">
+                <img src="${logo.image_url}" alt="${logo.title}" class="logo-img">
                 <div class="view-details">View Details</div>
             </div>
             <div class="logo-info">
@@ -361,7 +369,7 @@ function resetFilters() {
 
 // Modal functionality
 function openModal(logo) {
-    modalImg.src = logo.imageUrl;
+    modalImg.src = logo.image_url;
     modalTitle.textContent = logo.title;
     modalDescription.textContent = logo.description;
     
@@ -448,12 +456,15 @@ document.addEventListener('DOMContentLoaded', () => {
     loadingIndicator.innerHTML = '<p>Loading logos...</p>';
     document.body.appendChild(loadingIndicator);
     
-    // Load logos from Firebase
-    loadLogosFromFirebase()
+    // Load logos from Supabase
+    loadLogosFromSupabase()
         .finally(() => {
             // Remove loading indicator when done (whether successful or not)
             if (document.body.contains(loadingIndicator)) {
                 document.body.removeChild(loadingIndicator);
             }
+
+            // Display logos
+            displayLogos();
         });
 });
