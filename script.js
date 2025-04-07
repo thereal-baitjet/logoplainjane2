@@ -56,13 +56,20 @@ function loadLogosFromFirebase() {
 
 // Upload logo to Firebase
 function handleLogoUpload(event) {
+    console.log("Upload function called");
+    
     // Check if Firebase is initialized
     if (typeof window.storage === 'undefined' || typeof window.db === 'undefined') {
+        console.error('Firebase not initialized:', { 
+            storage: typeof window.storage, 
+            db: typeof window.db 
+        });
         alert('Firebase not initialized. Cannot upload logos at this time.');
         return;
     }
 
     const file = event.target.files[0];
+    console.log("File selected:", file ? file.name : "No file");
     
     if (!file) return;
     
@@ -79,8 +86,7 @@ function handleLogoUpload(event) {
     
     // Create a unique filename
     const fileName = `${Date.now()}_${file.name}`;
-    const storageRef = window.storage.ref(`logos/${fileName}`);
-    
+    const storageRef = window.storage.ref(`logos/${fileName}`);    
     // Upload file to Firebase Storage
     const uploadTask = storageRef.put(file);
     
@@ -390,3 +396,11 @@ document.head.appendChild(style);
 
 // Export the initialization function so it can be called from the config file
 window.initializeFirebase = initializeFirebase;
+// Export the initialization function so it can be called from the config file
+window.initializeFirebase = initializeFirebase
+
+// At the end of your script.js
+document.addEventListener('firebaseReady', () => {
+  console.log('Firebase is ready, loading logos...')
+  loadLogosFromFirebase()
+})
