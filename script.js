@@ -1,15 +1,15 @@
-// Import Firebase services from your config file
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getAnalytics } from "firebase/analytics";
+// Import Firebase services directly
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAO6dyONklESriV0JolOmafx60I-79w6UA",
   authDomain: "logoplainjane.firebaseapp.com",
   projectId: "logoplainjane",
-  storageBucket: "logoplainjane.firebasestorage.app",
+  storageBucket: "logoplainjane.appspot.com", // Fixed storage bucket URL
   messagingSenderId: "53515738347",
   appId: "1:53515738347:web:886b5a7efd8141f37172ae",
   measurementId: "G-ENK134X763"
@@ -20,6 +20,8 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+
+console.log("Firebase initialized successfully");
 
 // Your existing logos array with starter logos
 let logos = [
