@@ -1,6 +1,6 @@
 // Initialize Supabase client
-const supabaseUrl = 'YOUR_SUPABASE_URL'; // You'll need to replace this
-const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'; // You'll need to replace this
+const supabaseUrl = 'https://spbmnwqrduizhwsiqssg.supabase.co';
+const supabaseKey = 'SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwYm1ud3FyZHVpemh3c2lxc3NnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM5OTY5MDYsImV4cCI6MjA1OTU3MjkwNn0.cJpLpHFVKSOj0GdIUWVmHuqpvoN468r4U8f8TLh5dEE';
 const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 // Your existing logos array with starter logos
@@ -93,6 +93,12 @@ const clearFilters = document.getElementById('clear-filters');
 // Load logos from Supabase
 async function loadLogosFromSupabase() {
     try {
+        // First check if Supabase is properly initialized
+        if (!supabase) {
+            console.error("Supabase client not initialized");
+            throw new Error("Supabase client not initialized");
+        }
+        
         console.log("Attempting to load logos from Supabase...");
         
         // Query the logos table
@@ -132,7 +138,6 @@ async function loadLogosFromSupabase() {
         displayLogos();
     }
 }
-
 // Upload logo to Supabase
 async function handleLogoUpload(event) {
     console.log("Upload function called");
