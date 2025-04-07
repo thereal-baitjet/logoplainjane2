@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LogoPlainJane - Logo Gallery</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
+
 <body>
     <header>
         <h1>LogoPlainJane</h1>
@@ -27,7 +30,7 @@
                         <input type="file" id="logo-upload" accept="image/*" hidden>
                     </div>
                 </div>
-                
+
                 <div class="filter-container" id="filter-container">
                     <div class="filter-group">
                         <label for="category-filter">Category:</label>
@@ -49,12 +52,12 @@
                     </div>
                     <button id="clear-filters" class="clear-filters-btn">Clear Filters</button>
                 </div>
-                
+
                 <div class="gallery" id="logo-gallery">
                     <!-- Logos will be displayed here -->
                 </div>
             </div>
-            
+
             <div class="ad-container">
                 <div class="ad-space">
                     <p>Advertisement</p>
@@ -85,6 +88,16 @@
         <p>© 2023 LogoPlainJane. All rights reserved.</p>
     </footer>
 
+    <script type="module" src="script.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+
+    <!-- Your scripts - order matters! -->
     <script src="script.js"></script>
+    <script src="firebase-config.js"></script>
 </body>
+
 </html>

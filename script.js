@@ -1,138 +1,22 @@
+// Initialize Firebase with a separate configuration file
+// This allows you to exclude the config file from version control
+// and only deploy it to production
+let db, storage;
 
-// Enhanced logo data with more metadata
+// Function to initialize Firebase
+function initializeFirebase(config) {
+    // Initialize Firebase
+    firebase.initializeApp(config);
+    db = firebase.firestore();
+    storage = firebase.storage();
+    
+    // Now that Firebase is initialized, load the logos
+    loadLogosFromFirebase();
+}
+
+// Your existing logos array can be used as initial data if Firebase fails
 let logos = [
-    {
-        id: 1,
-        title: 'Google Logo',
-        description: 'The iconic colorful logo of Google, representing the search engine giant.',
-        imageUrl: 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png',
-        tags: ['tech', 'colorful', 'search'],
-        designer: 'Ruth Kedar',
-        year: '1998',
-        category: 'Technology',
-        colors: ['blue', 'red', 'yellow', 'green']
-    },
-    {
-        id: 2,
-        title: 'Apple Logo',
-        description: 'The minimalist apple silhouette logo representing Apple Inc.',
-        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg',
-        tags: ['tech', 'minimal', 'black'],
-        designer: 'Rob Janoff',
-        year: '1977',
-        category: 'Technology',
-        colors: ['black']
-    },
-    {
-        id: 3,
-        title: 'Nike Logo',
-        description: 'The famous Nike swoosh, one of the most recognizable logos in the world.',
-        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg',
-        tags: ['sports', 'simple', 'iconic'],
-        designer: 'Carolyn Davidson',
-        year: '1971',
-        category: 'Sports',
-        colors: ['black']
-    },
-    {
-        id: 4,
-        title: 'Adidas Logo',
-        description: 'The three stripes logo of Adidas, representing the sports apparel brand.',
-        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg',
-        tags: ['sports', 'stripes', 'apparel'],
-        designer: 'Adi Dassler',
-        year: '1949',
-        category: 'Sports',
-        colors: ['black']
-    },
-    {
-        id: 5,
-        title: 'Amazon Logo',
-        description: 'The Amazon logo with the arrow from A to Z, representing customer satisfaction.',
-        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
-        tags: ['retail', 'ecommerce', 'orange'],
-        designer: 'Turner Duckworth',
-        year: '2000',
-        category: 'Retail',
-        colors: ['orange', 'black']
-    },
-    {
-        id: 6,
-        title: 'Microsoft Logo',
-        description: 'The four-color window logo representing Microsoft Corporation.',
-        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg',
-        tags: ['tech', 'windows', 'colorful'],
-        designer: 'Microsoft',
-        year: '2012',
-        category: 'Technology',
-        colors: ['red', 'green', 'blue', 'yellow']
-    },
-    {
-        id: 7,
-        title: 'Coca-Cola Logo',
-        description: 'The distinctive cursive script of the Coca-Cola logo.',
-        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Coca-Cola_logo.svg',
-        tags: ['beverage', 'red', 'script'],
-        designer: 'Frank M. Robinson',
-        year: '1886',
-        category: 'Food & Beverage',
-        colors: ['red', 'white']
-    },
-    {
-        id: 8,
-        title: 'McDonald\'s Logo',
-        description: 'The golden arches of McDonald\'s, one of the most recognized symbols worldwide.',
-        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/3/36/McDonald%27s_Golden_Arches.svg',
-        tags: ['food', 'yellow', 'arches'],
-        designer: 'Jim Schindler',
-        year: '1962',
-        category: 'Food & Beverage',
-        colors: ['yellow', 'red']
-    },
-    {
-        id: 9,
-        title: 'Twitter Logo',
-        description: 'The blue bird logo representing the social media platform Twitter.',
-        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg',
-        tags: ['social', 'blue', 'bird'],
-        designer: 'Martin Grasser',
-        year: '2012',
-        category: 'Social Media',
-        colors: ['blue']
-    },
-    {
-        id: 10,
-        title: 'Facebook Logo',
-        description: 'The simple "f" logo of Facebook in its signature blue color.',
-        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/cd/Facebook_logo_%28square%29.png',
-        tags: ['social', 'blue', 'network'],
-        designer: 'Facebook',
-        year: '2005',
-        category: 'Social Media',
-        colors: ['blue', 'white']
-    },
-    {
-        id: 11,
-        title: 'Instagram Logo',
-        description: 'The colorful camera icon logo of Instagram.',
-        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg',
-        tags: ['social', 'camera', 'gradient'],
-        designer: 'Instagram',
-        year: '2016',
-        category: 'Social Media',
-        colors: ['purple', 'pink', 'orange', 'yellow']
-    },
-    {
-        id: 12,
-        title: 'Netflix Logo',
-        description: 'The bold red Netflix logo representing the streaming service.',
-        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg',
-        tags: ['entertainment', 'red', 'streaming'],
-        designer: 'Netflix',
-        year: '2014',
-        category: 'Entertainment',
-        colors: ['red', 'black']
-    }
+    // Your default logos here (if any)
 ];
 
 // DOM elements
@@ -153,8 +37,136 @@ const yearFilter = document.getElementById('year-filter');
 const colorFilter = document.getElementById('color-filter');
 const clearFilters = document.getElementById('clear-filters');
 
+// Load logos from Firebase
+function loadLogosFromFirebase() {
+    if (!db) {
+        console.error("Firebase not initialized");
+        initializeFilters();
+        displayLogos();
+        return;
+    }
+
+    db.collection('logos').orderBy('id', 'desc').get()
+        .then((querySnapshot) => {
+            const loadedLogos = [];
+            querySnapshot.forEach((doc) => {
+                loadedLogos.push({ id: doc.id, ...doc.data() });
+            });
+            
+            if (loadedLogos.length > 0) {
+                logos = loadedLogos;
+                initializeFilters();
+                displayLogos();
+            } else {
+                // If no logos in database yet, just display the default ones
+                initializeFilters();
+                displayLogos();
+            }
+        })
+        .catch((error) => {
+            console.error("Error loading logos:", error);
+            // If there's an error, still show the default logos
+            initializeFilters();
+            displayLogos();
+        });
+}
+
+// Upload logo to Firebase
+function handleLogoUpload(event) {
+    if (!db || !storage) {
+        alert('Firebase not initialized. Cannot upload logos at this time.');
+        return;
+    }
+
+    const file = event.target.files[0];
+    
+    if (!file) return;
+    
+    if (!file.type.match('image.*')) {
+        alert('Please upload an image file');
+        return;
+    }
+    
+    // Create a loading indicator
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.className = 'loading-indicator';
+    loadingIndicator.innerHTML = '<p>Uploading logo...</p>';
+    document.body.appendChild(loadingIndicator);
+    
+    // Create a unique filename
+    const fileName = `${Date.now()}_${file.name}`;
+    const storageRef = storage.ref(`logos/${fileName}`);
+    
+    // Upload file to Firebase Storage
+    const uploadTask = storageRef.put(file);
+    
+    uploadTask.on('state_changed', 
+        // Progress function
+        (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
+            loadingIndicator.innerHTML = `<p>Uploading logo... ${Math.round(progress)}%</p>`;
+        }, 
+        // Error function
+        (error) => {
+            console.error('Upload failed:', error);
+            alert('Upload failed. Please try again.');
+            document.body.removeChild(loadingIndicator);
+        }, 
+        // Complete function
+        () => {
+            // Get the download URL
+            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                document.body.removeChild(loadingIndicator);
+                
+                // Create a dialog to get logo details
+                const logoName = prompt('Enter a name for your logo:', file.name.split('.')[0]);
+                if (!logoName) return; // User canceled
+                
+                const logoDescription = prompt('Enter a description for your logo:', 'Custom uploaded logo');
+                const logoTags = prompt('Enter tags for your logo (comma separated):', 'custom, uploaded');
+                const logoDesigner = prompt('Who designed this logo?', 'Unknown');
+                const logoYear = prompt('What year was this logo created?', new Date().getFullYear().toString());
+                const logoCategory = prompt('What category does this logo belong to?', 'Custom');
+                const logoColors = prompt('What colors are in this logo? (comma separated)', 'black, white');
+                
+                const newLogo = {
+                    id: Date.now(),
+                    title: logoName,
+                    description: logoDescription || 'Custom uploaded logo',
+                    imageUrl: downloadURL,
+                    tags: logoTags ? logoTags.split(',').map(tag => tag.trim().toLowerCase()) : ['custom', 'uploaded'],
+                    designer: logoDesigner || 'Unknown',
+                    year: logoYear || new Date().getFullYear().toString(),
+                    category: logoCategory || 'Custom',
+                    colors: logoColors ? logoColors.split(',').map(color => color.trim().toLowerCase()) : ['black', 'white']
+                };
+                
+                // Save to Firebase Database
+                db.collection('logos').add(newLogo)
+                    .then(() => {
+                        // Reload logos
+                        loadLogosFromFirebase();
+                        
+                        // Reset file input
+                        logoUpload.value = '';
+                    })
+                    .catch((error) => {
+                        console.error("Error adding logo:", error);
+                        alert('Error saving logo data. Please try again.');
+                    });
+            });
+        }
+    );
+}
+
 // Initialize filters
 function initializeFilters() {
+    // Clear existing options first
+    categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+    yearFilter.innerHTML = '<option value="all">All Years</option>';
+    colorFilter.innerHTML = '<option value="all">All Colors</option>';
+    
     // Get unique categories, years, and colors
     const categories = [...new Set(logos.map(logo => logo.category))];
     const years = [...new Set(logos.map(logo => logo.year))].sort((a, b) => b - a);
@@ -335,61 +347,12 @@ function closeModalFunc() {
     document.body.style.overflow = 'auto'; // Re-enable scrolling
 }
 
-// Upload functionality
-function handleLogoUpload(event) {
-    const file = event.target.files[0];
-    
-    if (!file) return;
-    
-    if (!file.type.match('image.*')) {
-        alert('Please upload an image file');
-        return;
-    }
-    
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-        // Create a dialog to get logo details
-        const logoName = prompt('Enter a name for your logo:', file.name.split('.')[0]);
-        if (!logoName) return; // User canceled
-        
-        const logoDescription = prompt('Enter a description for your logo:', 'Custom uploaded logo');
-        const logoTags = prompt('Enter tags for your logo (comma separated):', 'custom, uploaded');
-        const logoDesigner = prompt('Who designed this logo?', 'Unknown');
-        const logoYear = prompt('What year was this logo created?', new Date().getFullYear().toString());
-        const logoCategory = prompt('What category does this logo belong to?', 'Custom');
-        const logoColors = prompt('What colors are in this logo? (comma separated)', 'black, white');
-        
-        const newLogo = {
-            id: Date.now(), // Use timestamp as unique ID
-            title: logoName,
-            description: logoDescription || 'Custom uploaded logo',
-            imageUrl: e.target.result,
-            tags: logoTags ? logoTags.split(',').map(tag => tag.trim().toLowerCase()) : ['custom', 'uploaded'],
-            designer: logoDesigner || 'Unknown',
-            year: logoYear || new Date().getFullYear().toString(),
-            category: logoCategory || 'Custom',
-            colors: logoColors ? logoColors.split(',').map(color => color.trim().toLowerCase()) : ['black', 'white']
-        };
-            logos.unshift(newLogo);
-        
-            // Update filters with new data
-            initializeFilters();
-            displayLogos();
-        
-            // Reset file input
-            logoUpload.value = '';
-        };
-    
-        reader.readAsDataURL(file);
-}
-
 // Event listeners
 searchBtn.addEventListener('click', searchAndFilterLogos);
 searchInput.addEventListener('keyup', event => {
-        if (event.key === 'Enter') {
-            searchAndFilterLogos();
-        }
+    if (event.key === 'Enter') {
+        searchAndFilterLogos();
+    }
 });
 
 categoryFilter.addEventListener('change', searchAndFilterLogos);
@@ -400,14 +363,35 @@ clearFilters.addEventListener('click', resetFilters);
 logoUpload.addEventListener('change', handleLogoUpload);
 closeModal.addEventListener('click', closeModalFunc);
 window.addEventListener('click', event => {
-        if (event.target === modal) {
-            closeModalFunc();
-        }
+    if (event.target === modal) {
+        closeModalFunc();
+    }
 });
 
-// Initialize the gallery
-document.addEventListener('DOMContentLoaded', () => {
-        initializeFilters();
-        displayLogos();
-});
-        // Reset file input
+// Add loading indicator styles
+const style = document.createElement('style');
+style.textContent = `
+.loading-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.loading-indicator p {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+`;
+document.head.appendChild(style);
+
+// Export the initialization function so it can be called from the config file
+window.initializeFirebase = initializeFirebase;
