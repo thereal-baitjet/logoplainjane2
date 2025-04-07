@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogoPlainJane - Logo Gallery</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>LogoPlainJane</h1>
+        <p>Upload, Search, and Discover Famous Logos</p>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="logo-gallery-container">
+                <div class="search-upload-container">
+                    <div class="search-container">
+                        <input type="text" id="search-input" placeholder="Search logos by name, tags, designer...">
+                        <button id="search-btn">Search</button>
+                    </div>
+                    <div class="upload-container">
+                        <label for="logo-upload" class="upload-btn">Upload Logo</label>
+                        <input type="file" id="logo-upload" accept="image/*" hidden>
+                    </div>
+                </div>
+                
+                <div class="filter-container" id="filter-container">
+                    <div class="filter-group">
+                        <label for="category-filter">Category:</label>
+                        <select id="category-filter">
+                            <option value="all">All Categories</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="year-filter">Year:</label>
+                        <select id="year-filter">
+                            <option value="all">All Years</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="color-filter">Color:</label>
+                        <select id="color-filter">
+                            <option value="all">All Colors</option>
+                        </select>
+                    </div>
+                    <button id="clear-filters" class="clear-filters-btn">Clear Filters</button>
+                </div>
+                
+                <div class="gallery" id="logo-gallery">
+                    <!-- Logos will be displayed here -->
+                </div>
+            </div>
+            
+            <div class="ad-container">
+                <div class="ad-space">
+                    <p>Advertisement</p>
+                    <!-- Ad content goes here -->
+                </div>
+                <div class="ad-space">
+                    <p>Advertisement</p>
+                    <!-- Ad content goes here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="logo-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">×</span>
+            <img id="modal-img" src="" alt="Logo">
+            <div id="modal-details">
+                <h3 id="modal-title"></h3>
+                <p id="modal-description"></p>
+                <div id="modal-metadata" class="modal-metadata"></div>
+                <div id="modal-tags" class="modal-tags"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2023 LogoPlainJane. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
