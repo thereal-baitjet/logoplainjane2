@@ -21,10 +21,12 @@ if (typeof firebase === 'undefined') {
     // Initialize Firebase services
     const db = firebase.firestore();
     const storage = firebase.storage();
+    const analytics = firebase.analytics();
     
     // Make Firebase services available globally
     window.db = db;
     window.storage = storage;
+    window.analytics = analytics;
     
     // Call the initialization function if it exists
     if (typeof loadLogosFromFirebase === 'function') {
@@ -32,6 +34,19 @@ if (typeof firebase === 'undefined') {
     } else {
       console.warn('loadLogosFromFirebase function not found. Make sure script.js is loaded correctly.');
     }
+
+    // Firebase Storage Security Rules
+    const storageRules = `
+    rules_version = '2';
+    service cloud.firestore {
+      match /databases/{database}/documents {
+        match /{document=**} {
+          allow read, write: if true;  // This allows anyone to read/write - for production, you should restrict this
+        }
+      }
+    }
+    `;
+    console.log('Firebase Storage Rules:', storageRules);
   } catch (error) {
     console.error('Error initializing Firebase:', error);
   }
