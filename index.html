@@ -51,7 +51,6 @@
     <main>
         <div id="logo-gallery" class="logo-gallery">
             <!-- Logos will be dynamically added here -->
-            <div class="loading">Loading logos...</div>
         </div>
     </main>
     
@@ -82,8 +81,14 @@
             </div>
         </div>
     </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
     
-    <!-- Firebase will be imported via ES modules -->
-    <script type="module" src="script.js"></script>
+    <!-- Main Script -->
+    <script src="script.js"></script>
 </body>
 </html>
