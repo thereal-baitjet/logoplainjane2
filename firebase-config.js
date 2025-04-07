@@ -1,53 +1,25 @@
-// Check if Firebase is available
-if (typeof firebase === 'undefined') {
-  console.error('Firebase SDK is not loaded. Make sure you have included the Firebase scripts in your HTML.');
-} else {
-  // Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyAO6dyONklESriV0JolOmafx60I-79w6UA",
-    authDomain: "logoplainjane.firebaseapp.com",
-    projectId: "logoplainjane",
-    storageBucket: "logoplainjane.appspot.com",
-    messagingSenderId: "53515738347",
-    appId: "1:53515738347:web:886b5a7efd8141f37172ae",
-    measurementId: "G-ENK134X763"
-  };
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
-  // Initialize Firebase
-  try {
-    firebase.initializeApp(firebaseConfig);
-    console.log('Firebase initialized successfully');
-    
-    // Initialize Firebase services
-    const db = firebase.firestore();
-    const storage = firebase.storage();
-    const analytics = firebase.analytics();
-    
-    // Make Firebase services available globally
-    window.db = db;
-    window.storage = storage;
-    window.analytics = analytics;
-    
-    // Call the initialization function if it exists
-    if (typeof loadLogosFromFirebase === 'function') {
-      loadLogosFromFirebase();
-    } else {
-      console.warn('loadLogosFromFirebase function not found. Make sure script.js is loaded correctly.');
-    }
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAO6dyONklESriV0JolOmafx60I-79w6UA",
+  authDomain: "logoplainjane.firebaseapp.com",
+  projectId: "logoplainjane",
+  storageBucket: "logoplainjane.firebasestorage.app",
+  messagingSenderId: "53515738347",
+  appId: "1:53515738347:web:886b5a7efd8141f37172ae",
+  measurementId: "G-ENK134X763"
+};
 
-    // Firebase Storage Security Rules
-    const storageRules = `
-    rules_version = '2';
-    service cloud.firestore {
-      match /databases/{database}/documents {
-        match /{document=**} {
-          allow read, write: if true;  // This allows anyone to read/write - for production, you should restrict this
-        }
-      }
-    }
-    `;
-    console.log('Firebase Storage Rules:', storageRules);
-  } catch (error) {
-    console.error('Error initializing Firebase:', error);
-  }
-}
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+export { app, analytics, db, storage };
