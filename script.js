@@ -1,153 +1,5 @@
-// Initialize Firebase with a separate configuration file
-// This allows you to exclude the config file from version control
-// and only deploy it to production
-let db, storage;
-
-// Function to initialize Firebase
-function initializeFirebase(config) {
-    // Initialize Firebase
-    firebase.initializeApp(config);
-    db = firebase.firestore();
-    storage = firebase.storage();
-    
-    // Now that Firebase is initialized, load the logos
-    loadLogosFromFirebase();
-}
-
-// Your existing logos array with starter logos
 let logos = [
-    {
-        id: 1,
-        title: "Abstract Geometric Logo",
-        description: "A modern abstract logo with geometric shapes in vibrant colors. Perfect for tech companies and startups.",
-        imageUrl: "https://cdn.pixabay.com/photo/2017/03/16/21/18/logo-2150297_1280.png",
-        tags: ["abstract", "geometric", "modern", "tech", "colorful"],
-        designer: "Jane Smith",
-        year: "2022",
-        category: "Technology",
-        colors: ["blue", "purple", "orange"]
-    },
-    {
-        id: 2,
-        title: "Minimalist Coffee Shop Logo",
-        description: "A clean, minimalist logo for an artisanal coffee shop. Features a simple coffee cup icon with elegant typography.",
-        imageUrl: "https://cdn.pixabay.com/photo/2016/11/26/19/04/coffee-1861608_1280.png",
-        tags: ["minimalist", "coffee", "food", "beverage", "simple"],
-        designer: "Mark Johnson",
-        year: "2021",
-        category: "Food & Beverage",
-        colors: ["brown", "beige", "white"]
-    },
-    {
-        id: 3,
-        title: "Vintage Photography Logo",
-        description: "A vintage-inspired logo for a professional photographer. Features a classic camera icon with retro typography.",
-        imageUrl: "https://cdn.pixabay.com/photo/2016/11/19/14/16/camera-1839371_1280.jpg",
-        tags: ["vintage", "photography", "retro", "camera", "professional"],
-        designer: "Sarah Williams",
-        year: "2020",
-        category: "Photography",
-        colors: ["black", "gold", "cream"]
-    },
-    {
-        id: 4,
-        title: "Eco-Friendly Nature Logo",
-        description: "An organic, eco-friendly logo for environmental organizations or sustainable products. Features a leaf motif.",
-        imageUrl: "https://cdn.pixabay.com/photo/2017/01/13/14/55/leaves-1977740_1280.png",
-        tags: ["eco", "nature", "organic", "green", "leaf"],
-        designer: "David Green",
-        year: "2023",
-        category: "Environment",
-        colors: ["green", "brown", "white"]
-    },
-    {
-        id: 5,
-        title: "Bold Fitness Brand Logo",
-        description: "A bold, energetic logo for a fitness brand or gym. Features dynamic shapes suggesting movement and strength.",
-        imageUrl: "https://cdn.pixabay.com/photo/2016/06/09/18/36/logo-1446293_1280.png",
-        tags: ["fitness", "gym", "bold", "energetic", "sports"],
-        designer: "Michael Strong",
-        year: "2022",
-        category: "Fitness",
-        colors: ["red", "black", "white"]
-    },
-    {
-        id: 6,
-        title: "Luxury Fashion Logo",
-        description: "An elegant, sophisticated logo for a luxury fashion brand. Features refined typography and a minimalist icon.",
-        imageUrl: "https://cdn.pixabay.com/photo/2017/01/31/23/42/animal-2028258_1280.png",
-        tags: ["luxury", "fashion", "elegant", "sophisticated", "minimalist"],
-        designer: "Sophia Chen",
-        year: "2021",
-        category: "Fashion",
-        colors: ["black", "gold", "white"]
-    },
-    {
-        id: 7,
-        title: "Playful Children's Brand Logo",
-        description: "A colorful, playful logo for a children's brand or toy company. Features fun shapes and bright colors.",
-        imageUrl: "https://cdn.pixabay.com/photo/2016/08/25/07/30/red-1618916_1280.png",
-        tags: ["children", "playful", "colorful", "fun", "toys"],
-        designer: "Emma Joy",
-        year: "2023",
-        category: "Children",
-        colors: ["red", "yellow", "blue", "green"]
-    },
-    {
-        id: 8,
-        title: "Rustic Restaurant Logo",
-        description: "A rustic, handcrafted logo for a farm-to-table restaurant or artisanal food brand. Features organic textures.",
-        imageUrl: "https://cdn.pixabay.com/photo/2017/01/09/02/02/pink-1964471_1280.jpg",
-        tags: ["rustic", "restaurant", "food", "handcrafted", "organic"],
-        designer: "Thomas Craft",
-        year: "2020",
-        category: "Food & Beverage",
-        colors: ["brown", "green", "cream"]
-    },
-    {
-        id: 9,
-        title: "Digital Agency Logo",
-        description: "A sleek, modern logo for a digital agency or tech company. Features abstract pixel-inspired elements.",
-        imageUrl: "https://cdn.pixabay.com/photo/2017/01/08/21/37/logo-1964112_1280.png",
-        tags: ["digital", "agency", "tech", "modern", "pixels"],
-        designer: "Alex Tech",
-        year: "2022",
-        category: "Technology",
-        colors: ["blue", "teal", "black"]
-    },
-    {
-        id: 10,
-        title: "Handwritten Beauty Logo",
-        description: "A delicate, handwritten logo for a beauty brand or cosmetics company. Features flowing script typography.",
-        imageUrl: "https://cdn.pixabay.com/photo/2015/12/28/02/58/home-1110868_1280.png",
-        tags: ["beauty", "handwritten", "cosmetics", "delicate", "script"],
-        designer: "Lily Belle",
-        year: "2021",
-        category: "Beauty",
-        colors: ["pink", "gold", "white"]
-    },
-    {
-        id: 11,
-        title: "Geometric Real Estate Logo",
-        description: "A professional, geometric logo for a real estate company or property developer. Features architectural elements.",
-        imageUrl: "https://cdn.pixabay.com/photo/2016/06/13/13/46/logo-1454032_1280.png",
-        tags: ["real estate", "geometric", "professional", "architecture", "property"],
-        designer: "Robert Build",
-        year: "2022",
-        category: "Real Estate",
-        colors: ["blue", "gray", "white"]
-    },
-    {
-        id: 12,
-        title: "Vintage Barbershop Logo",
-        description: "A classic, vintage-inspired logo for a traditional barbershop. Features retro typography and iconic elements.",
-        imageUrl: "https://cdn.pixabay.com/photo/2016/08/25/07/30/orange-1618917_1280.png",
-        tags: ["barbershop", "vintage", "retro", "classic", "grooming"],
-        designer: "James Clip",
-        year: "2020",
-        category: "Grooming",
-        colors: ["black", "red", "cream"]
-    }
+    // ... your starter logos ...
 ];
 
 // DOM elements
@@ -170,14 +22,15 @@ const clearFilters = document.getElementById('clear-filters');
 
 // Load logos from Firebase
 function loadLogosFromFirebase() {
-    if (!db) {
-        console.error("Firebase not initialized");
+    // Check if Firebase is initialized
+    if (typeof window.db === 'undefined') {
+        console.warn('Firebase Firestore not initialized. Using default logos.');
         initializeFilters();
         displayLogos();
         return;
     }
 
-    db.collection('logos').orderBy('id', 'desc').get()
+    window.db.collection('logos').orderBy('id', 'desc').get()
         .then((querySnapshot) => {
             const loadedLogos = [];
             querySnapshot.forEach((doc) => {
@@ -186,17 +39,16 @@ function loadLogosFromFirebase() {
             
             if (loadedLogos.length > 0) {
                 logos = loadedLogos;
-                initializeFilters();
-                displayLogos();
+                console.log('Loaded logos from Firebase:', logos.length);
             } else {
-                // If no logos in database yet, just display the default ones
-                initializeFilters();
-                displayLogos();
+                console.log('No logos found in Firebase. Using default logos.');
             }
+            
+            initializeFilters();
+            displayLogos();
         })
         .catch((error) => {
-            console.error("Error loading logos:", error);
-            // If there's an error, still show the default logos
+            console.error("Error loading logos from Firebase:", error);
             initializeFilters();
             displayLogos();
         });
@@ -204,7 +56,8 @@ function loadLogosFromFirebase() {
 
 // Upload logo to Firebase
 function handleLogoUpload(event) {
-    if (!db || !storage) {
+    // Check if Firebase is initialized
+    if (typeof window.storage === 'undefined' || typeof window.db === 'undefined') {
         alert('Firebase not initialized. Cannot upload logos at this time.');
         return;
     }
@@ -226,7 +79,7 @@ function handleLogoUpload(event) {
     
     // Create a unique filename
     const fileName = `${Date.now()}_${file.name}`;
-    const storageRef = storage.ref(`logos/${fileName}`);
+    const storageRef = window.storage.ref(`logos/${fileName}`);
     
     // Upload file to Firebase Storage
     const uploadTask = storageRef.put(file);
@@ -274,7 +127,7 @@ function handleLogoUpload(event) {
                 };
                 
                 // Save to Firebase Database
-                db.collection('logos').add(newLogo)
+                window.db.collection('logos').add(newLogo)
                     .then(() => {
                         // Reload logos
                         loadLogosFromFirebase();
@@ -291,7 +144,18 @@ function handleLogoUpload(event) {
     );
 }
 
-// Initialize filters
+// Initialize the gallery
+document.addEventListener('DOMContentLoaded', () => {
+    // Check if Firebase is already initialized
+    if (typeof window.db !== 'undefined') {
+        loadLogosFromFirebase();
+    } else {
+        // If not, initialize filters and display default logos
+        console.log('Firebase not yet initialized. Will be loaded later if available.');
+        initializeFilters();
+        displayLogos();
+    }
+});
 function initializeFilters() {
     // Clear existing options first
     categoryFilter.innerHTML = '<option value="all">All Categories</option>';
